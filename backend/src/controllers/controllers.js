@@ -67,7 +67,7 @@ export async function fetchBarChart(req, res) {
 
 export async function newCensus(req, res) {
   const { name, is_vaccinated, birthdate, gender } = req.body;
-
+  console.log(birthdate)
   if (!name || is_vaccinated === undefined || !birthdate || !gender) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
@@ -75,7 +75,7 @@ export async function newCensus(req, res) {
   try {
     const result = await pool.query(
       `INSERT INTO people (name, is_vaccinated, birthdate, gender)
-       VALUES ($1, $2, TO_TIMESTAMP($3, 'DD-MM-YYYY'), $4)
+       VALUES ($1, $2, $3::date, $4)
        RETURNING *`,
       [name, is_vaccinated, birthdate, gender]
     );

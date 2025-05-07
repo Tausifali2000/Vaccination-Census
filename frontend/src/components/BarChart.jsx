@@ -8,33 +8,23 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import { useEffect } from 'react';
+import { useCensusStore } from '../store/store';
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const response = {
-  data: [
-    { count: 3, gender: 'male', age: 15 },
-    { count: 1, gender: 'female', age: 15 },
-    { count: 4, gender: 'male', age: 16 },
-    { count: 3, gender: 'female', age: 16 },
-    { count: 3, gender: 'male', age: 35 },
-    { count: 1, gender: 'female', age: 65 },
-    { count: 4, gender: 'male', age: 17 },
-    { count: 3, gender: 'female', age: 36 },
-    { count: 3, gender: 'male', age: 36 },
-    { count: 1, gender: 'female', age: 15 },
-    { count: 4, gender: 'male', age: 10 },
-    { count: 3, gender: 'female', age: 10 },
-   
-    // Add more data as needed
-  ],
-};
-
 const BarChart = () => {
+  const { fetchBarChart, barChartData } = useCensusStore();
+
+  useEffect(() => {
+    fetchBarChart(); // Fetch on component mount
+  }, [fetchBarChart]);
+
   const genders = ['male', 'female'];
 
   // Extract unique sorted ages
-  const labels = Array.from(new Set(response.data.map((d) => d.age))).sort((a, b) => a - b);
+  const labels = Array.from(new Set(barChartData.map((d) => d.age))).sort((a, b) => a - b);
 
   // Prepare gender-wise data per age
   const genderData = {
@@ -44,8 +34,8 @@ const BarChart = () => {
 
   labels.forEach((age) => {
     genders.forEach((gender) => {
-      const match = response.data.find((d) => d.age === age && d.gender === gender);
-      genderData[gender].push(match ? match.count : 0);
+      const match = barChartData.find((d) => d.age === age && d.gender === gender);
+      genderData[gender].push(match ? Number(match.count) : 0);
     });
   });
 
@@ -71,7 +61,7 @@ const BarChart = () => {
       legend: {
         position: 'top',
         labels: {
-          color: '#374151', // Tailwind gray-700
+          color: '#374151',
         },
       },
     },
@@ -80,13 +70,13 @@ const BarChart = () => {
         title: {
           display: true,
           text: 'Age',
-          color: '#6b7280', // Tailwind gray-500
+          color: '#6b7280',
         },
         ticks: {
           color: '#6b7280',
         },
         grid: {
-          color: '#e5e7eb', // Tailwind gray-200
+          color: '#e5e7eb',
         },
       },
       y: {
@@ -115,4 +105,4 @@ const BarChart = () => {
   );
 };
 
-export default BarChart
+export default BarChart;
