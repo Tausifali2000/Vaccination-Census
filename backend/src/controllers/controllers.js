@@ -1,0 +1,88 @@
+import pool from "../config/db.config.js";
+
+
+export async function fetchTable(req, res) {
+
+  try {
+    
+    const result = await pool.query('SELECT * FROM people ORDER BY id');
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export async function fetchLineChart(req, res) {
+  try {
+    const isVaccinated = req.query.is_vaccinated;
+
+    if (isVaccinated !== "true" && isVaccinated !== "false") {
+      return res.status(400).json({ error: "Invalid or missing 'is_vaccinated' query parameter." });
+    }
+
+    const query = `
+      SELECT COUNT(*) AS count, EXTRACT(YEAR FROM AGE(birthdate))::int AS age
+      FROM people
+      WHERE is_vaccinated = $1
+      GROUP BY age
+      ORDER BY age;
+    `;
+
+    const result = await pool.query(query, [isVaccinated === "true"]);
+    const formatted = result.rows.map(row => ({
+      count: parseInt(row.count, 10),
+      age: row.age,
+    }));
+
+    res.json({ data: formatted });
+  } catch (error) {
+    console.error("Error fetching vaccination counts by age:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
+
+export async function fetchBarChart(req, res) {
+
+  try {
+    const result = await pool.query(`
+      SELECT 
+        COUNT(*) AS count,
+        gender,
+        EXTRACT(YEAR FROM AGE(birthdate))::int AS age
+      FROM people
+      GROUP BY age, gender
+      ORDER BY age;
+    `);
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching bar chart data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
+export async function newCensus(req, res) {
+  const { name, is_vaccinated, birthdate, gender } = req.body;
+
+  if (!name || is_vaccinated === undefined || !birthdate || !gender) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO people (name, is_vaccinated, birthdate, gender)
+       VALUES ($1, $2, TO_TIMESTAMP($3, 'DD-MM-YYYY'), $4)
+       RETURNING *`,
+      [name, is_vaccinated, birthdate, gender]
+    );
+
+    res.status(201).json({ message: 'Vote submitted successfully', data: result.rows[0] });
+  } catch (error) {
+    console.error('Error inserting vote:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
