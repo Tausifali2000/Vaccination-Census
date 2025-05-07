@@ -1,3 +1,4 @@
+import BarChart from "../components/BarChart";
 import Header from "../components/Header";
 import LineChart from "../components/LineChart";
 import Table from "../components/Table";
@@ -20,7 +21,7 @@ const Census = () => {
           <div className="flex-1">
             <LineChart />
           </div>
-          <div className="flex-1">3</div>
+          <div className="flex-1"><BarChart /></div>
         </div>
       </div>
     </div>
