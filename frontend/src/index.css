@@ -10,3 +10,19 @@ body,
   padding: 0;
   font-family: "Inter", sans-serif;
 }
+
+.table-header {
+  @apply px-4 py-3 font-medium text-gray-700;
+}
+
+.table-cell {
+  @apply px-4 py-3 text-gray-700;
+}
+
+.vaccinated-yes {
+  @apply bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.vaccinated-no {
+  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium;
+}
