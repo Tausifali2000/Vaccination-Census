@@ -1,5 +1,6 @@
 
 # Project Overview
+NOTE : These Boxes are apprearing due to video conversion to gif
 
 ![Demo](Images/vaccine-Demo.gif)
 ![App Screenshot](Images/Demo1.png)
