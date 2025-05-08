@@ -14,7 +14,7 @@ export const useCensusStore = create((set, get) => ({
   totalPages: 1, 
   error: null,
 
-  // Fetch table data
+ 
   fetchTable: async (page = 1) => {
     set({ fetchingTable: true, error: null });
 
@@ -35,7 +35,7 @@ export const useCensusStore = create((set, get) => ({
     }
   },
 
-  // Fetch line chart data
+ 
   fetchLineChart: async () => {
     set({ fetchingLineChart: true, error: null });
     try {
@@ -70,7 +70,7 @@ export const useCensusStore = create((set, get) => ({
     }
   },
 
-  // Fetch bar chart data
+
   fetchBarChart: async () => {
     set({ fetchingBarChart: true, error: null });
     try {
@@ -97,10 +97,10 @@ export const useCensusStore = create((set, get) => ({
      
       set({ currentPage: newTotalPages });
   
-      // Fetch that last page
+     
       await get().fetchTable(newTotalPages);
   
-      // Fetch charts
+    
       await Promise.all([
         get().fetchLineChart(),
         get().fetchBarChart()

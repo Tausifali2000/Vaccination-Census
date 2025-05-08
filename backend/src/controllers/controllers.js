@@ -85,7 +85,7 @@ export async function fetchBarChart(req, res) {
 //Add New Census
 export async function newCensus(req, res) {
   const { name, is_vaccinated, birthdate, gender } = req.body;
-  console.log(birthdate)
+  
   if (!name || is_vaccinated === undefined || !birthdate || !gender) {
     return res.status(400).json({ error: 'Missing required fields' });
   }

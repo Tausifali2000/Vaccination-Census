@@ -31,7 +31,7 @@ const AddCensus = ({ dialogRef }) => {
     handleClose();
   };
 
-  // Close dialog and reset form
+ 
   const handleClose = () => {
     dialogRef.current?.close();
     reset();
@@ -109,7 +109,7 @@ const AddCensus = ({ dialogRef }) => {
           {errors.is_vaccinated && <p className="error-message">Select vaccination status</p>}
         </div>
 
-        {/* Submit Only */}
+        {/* Submit */}
         <div className="flex justify-end pt-4">
           <button
             type="submit"

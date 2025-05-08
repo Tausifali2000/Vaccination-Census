@@ -1,8 +1,9 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
+import { fileURLToPath } from 'url';
 import { ENV_VARS } from "./config/envVars.config.js";
-import fetchRoutes from "./routes/routes.js"
+import fetchRoutes from "./routes/routes.js";
 
 const app = express();
 

@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { useCensusStore } from '../store/store.js';
-import Spinner from './Spinner.jsx';
+
 
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);

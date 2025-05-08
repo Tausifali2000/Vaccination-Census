@@ -39,7 +39,7 @@ const BarChart = () => {
 
   const allCounts = [...genderData.male, ...genderData.female];
   const maxCount = Math.max(...allCounts);
-  const yMax = Math.ceil(maxCount * 1.2) || 1; // avoid 0
+  const yMax = Math.ceil(maxCount * 1.2) || 1; 
 
   const data = {
     labels,
