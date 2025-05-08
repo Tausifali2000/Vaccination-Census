@@ -9,15 +9,26 @@ export const useCensusStore = create((set, get) => ({
   addingCensus: false,
   tableData: [],
   lineChartData: [],
-  barChartData: [], // ✅ New state for bar chart data
+  barChartData: [],
+  currentPage: 1,      
+  totalPages: 1, 
   error: null,
 
   // Fetch table data
-  fetchTable: async () => {
+  fetchTable: async (page = 1) => {
     set({ fetchingTable: true, error: null });
+
     try {
-      const response = await axiosInstance.get('/data');
-      set({ tableData: response.data.data, fetchingTable: false });
+      const response = await axiosInstance.get('/data', {
+        params: { page }
+      });
+
+      set({
+        tableData: response.data.data,
+        currentPage: response.data.currentPage || page,   
+        totalPages: response.data.totalPages || 1,          
+        fetchingTable: false,
+      });
     } catch (error) {
       console.error('Error fetching table data:', error);
       set({ fetchingTable: false, error: error.message });
@@ -71,24 +82,38 @@ export const useCensusStore = create((set, get) => ({
     }
   },
 
-
   addCensus: async (data) => {
     set({ addingCensus: true, error: null });
+  
     try {
       const response = await axiosInstance.post('/vote', data);
       set({ addingCensus: false });
-      
+  
+     
+      const tableResponse = await axiosInstance.get('/data', { params: { page: 1 } });
+  
+      const newTotalPages = tableResponse.data.totalPages || 1;
+  
+     
+      set({ currentPage: newTotalPages });
+  
+      // Fetch that last page
+      await get().fetchTable(newTotalPages);
+  
+      // Fetch charts
       await Promise.all([
-        get().fetchTable(),
         get().fetchLineChart(),
         get().fetchBarChart()
       ]);
-      
-      toast.success("Census Added")
+  
+      toast.success("Census Added");
     } catch (error) {
       console.error('Error adding census:', error);
       set({ addingCensus: false, error: error.message });
       toast.error(error.message || "Failed");
     }
   },
+  
+
+  setCurrentPage: (page) => set({ currentPage: page }),
 }));

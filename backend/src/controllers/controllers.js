@@ -1,18 +1,36 @@
 import pool from "../config/db.config.js";
 
 
+//Fetch Table
 export async function fetchTable(req, res) {
+  const { page = 1 } = req.query; 
+  const pageSize = 15; 
+  const offset = (page - 1) * pageSize; 
 
   try {
-    
-    const result = await pool.query('SELECT * FROM people ORDER BY id');
-    res.json({ data: result.rows });
+   
+    const result = await pool.query(
+      'SELECT * FROM people ORDER BY id LIMIT $1 OFFSET $2', 
+      [pageSize, offset]
+    );
+
+   
+    const countResult = await pool.query('SELECT COUNT(*) FROM people');
+    const totalCount = parseInt(countResult.rows[0].count, 10);
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    res.json({
+      data: result.rows,
+      totalPages,
+      currentPage: Number(page),
+    });
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
+//Fetch LineChart
 export async function fetchLineChart(req, res) {
   try {
     const isVaccinated = req.query.is_vaccinated;
@@ -43,7 +61,7 @@ export async function fetchLineChart(req, res) {
 }
 
 
-
+//Fetch BarChart
 export async function fetchBarChart(req, res) {
 
   try {
@@ -64,7 +82,7 @@ export async function fetchBarChart(req, res) {
   }
 }
 
-
+//Add New Census
 export async function newCensus(req, res) {
   const { name, is_vaccinated, birthdate, gender } = req.body;
   console.log(birthdate)

@@ -11,22 +11,18 @@ import { Bar } from 'react-chartjs-2';
 import { useEffect } from 'react';
 import { useCensusStore } from '../store/store';
 
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const BarChart = () => {
   const { fetchBarChart, barChartData } = useCensusStore();
 
   useEffect(() => {
-    fetchBarChart(); // Fetch on component mount
+    fetchBarChart();
   }, [fetchBarChart]);
 
   const genders = ['male', 'female'];
-
-  // Extract unique sorted ages
   const labels = Array.from(new Set(barChartData.map((d) => d.age))).sort((a, b) => a - b);
 
-  // Prepare gender-wise data per age
   const genderData = {
     male: [],
     female: [],
@@ -34,10 +30,16 @@ const BarChart = () => {
 
   labels.forEach((age) => {
     genders.forEach((gender) => {
-      const match = barChartData.find((d) => d.age === age && d.gender === gender);
-      genderData[gender].push(match ? Number(match.count) : 0);
+      const total = barChartData
+        .filter((d) => d.age === age && d.gender === gender)
+        .reduce((sum, d) => sum + Number(d.count), 0);
+      genderData[gender].push(total);
     });
   });
+
+  const allCounts = [...genderData.male, ...genderData.female];
+  const maxCount = Math.max(...allCounts);
+  const yMax = Math.ceil(maxCount * 1.2) || 1; // avoid 0
 
   const data = {
     labels,
@@ -45,12 +47,12 @@ const BarChart = () => {
       {
         label: 'Male',
         data: genderData.male,
-        backgroundColor: '#3B82F6', // Tailwind blue-500
+        backgroundColor: '#3B82F6',
       },
       {
         label: 'Female',
         data: genderData.female,
-        backgroundColor: '#EC4899', // Tailwind pink-500
+        backgroundColor: '#EC4899',
       },
     ],
   };
@@ -76,7 +78,7 @@ const BarChart = () => {
           color: '#6b7280',
         },
         grid: {
-          color: '#e5e7eb',
+          display: false,
         },
       },
       y: {
@@ -85,13 +87,15 @@ const BarChart = () => {
           text: 'Number of People',
           color: '#6b7280',
         },
+        beginAtZero: true,
+        suggestedMax: yMax,
         ticks: {
           color: '#6b7280',
-          beginAtZero: true,
           stepSize: 1,
+          precision: 0,
         },
         grid: {
-          color: '#e5e7eb',
+          display: false,
         },
       },
     },
@@ -99,7 +103,7 @@ const BarChart = () => {
 
   return (
     <div className="p-6 bg-white border-2 border-[#e8e8e8] rounded-xl w-full max-w-4xl mx-auto">
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">Gender Distribution by Age</h2>
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">Submission by Gender</h2>
       <Bar data={data} options={options} />
     </div>
   );

@@ -10,13 +10,15 @@ import {
   Tooltip,
 } from 'chart.js';
 import { useCensusStore } from '../store/store.js';
+import Spinner from './Spinner.jsx';
 
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
 
 const LineChart = () => {
-  const { lineChartData, fetchingLineChart, fetchLineChart } = useCensusStore();
+  const { lineChartData, fetchLineChart } = useCensusStore();
 
+ 
   useEffect(() => {
     fetchLineChart();
   }, [fetchLineChart]);
@@ -66,7 +68,7 @@ const LineChart = () => {
           color: '#6b7280',
         },
         grid: {
-          color: '#e5e7eb',
+          display: false,
         },
       },
       y: {
@@ -81,20 +83,17 @@ const LineChart = () => {
           stepSize: 1,
         },
         grid: {
-          color: '#e5e7eb',
+          display: false,
         },
       },
     },
   };
 
   return (
-    <div className="p-6 bg-white border-2 border-[#e8e8e8] rounded-xl w-full max-w-3xl mx-auto">
+    <div className="p-6 bg-white border-2 border-[#e8e8e8] rounded-xl w-full max-w-3xl mx-auto min-h-[300px] sm:min-h-[350px] md:min-h-[400px]">
       <h2 className="text-lg font-semibold text-gray-700 mb-4">Vaccination by Age</h2>
-      {fetchingLineChart ? (
-        <p className="text-gray-500 text-center">Loading chart...</p>
-      ) : (
-        <Line data={data} options={options} />
-      )}
+      <Line data={data} options={options} />
+      
     </div>
   );
 };
